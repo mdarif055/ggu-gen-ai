@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acentra — Generative AI Solution Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2430;
+    --ink-soft:#4A5464;
+    --paper:#FAFAF9;
+    --panel:#FFFFFF;
+    --line:#E4E2DC;
+    --navy:#0C447C;
+    --navy-deep:#082E56;
+    --gold:#B7873B;
+    --mint:#1E7A63;
+    --code-bg:#F1EFE8;
+    --radius:10px;
+    --maxw:920px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif; font-size:16px; line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{ font-family:'Fraunces',serif; color:var(--navy-deep); letter-spacing:-0.01em; }
+  a{ color:var(--navy); }
+
+  /* ---- Hero ---- */
+  .hero{
+    padding:96px 24px 64px; text-align:center;
+    background:
+      radial-gradient(60% 60% at 50% 0%, rgba(12,68,124,0.06), transparent 70%),
+      var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .hero .eyebrow{
+    display:inline-block; font-family:'JetBrains Mono',monospace; font-size:12.5px;
+    letter-spacing:0.14em; text-transform:uppercase; color:var(--gold);
+    border:1px solid rgba(183,135,59,0.35); border-radius:999px; padding:6px 14px; margin-bottom:22px;
+  }
+  .hero h1{ font-size:clamp(2.6rem,6vw,4.2rem); font-weight:700; margin:0 0 10px; }
+  .hero p.sub{ font-size:1.2rem; color:var(--ink-soft); max-width:640px; margin:0 auto 6px; }
+  .hero p.doctype{ font-size:1rem; font-style:italic; color:var(--navy); margin-top:8px; }
+  .hero .meta{
+    margin-top:34px; display:flex; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-soft);
+  }
+  .hero .meta span{ margin:0 14px; }
+  .hero .meta strong{ color:var(--ink); font-weight:600; }
+
+  /* ---- Layout ---- */
+  .layout{ display:flex; max-width:1240px; margin:0 auto; align-items:flex-start; }
+  nav.toc{
+    position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto;
+    padding:40px 20px 40px 32px; border-right:1px solid var(--line);
+    width:260px; flex:0 0 260px;
+  }
+  nav.toc .rail{ position:relative; padding-left:16px; border-left:2px solid var(--line); }
+  nav.toc .rail-fill{
+    position:absolute; left:-2px; top:0; width:2px; background:var(--navy);
+    height:0%; transition:height .15s ease-out;
+  }
+  nav.toc a{
+    display:block; font-size:13.5px; color:var(--ink-soft); text-decoration:none;
+    padding:6px 0; border-left:2px solid transparent; margin-left:-18px; padding-left:16px;
+    transition:color .15s;
+  }
+  nav.toc a:hover{ color:var(--navy); }
+  nav.toc a.active{ color:var(--navy); font-weight:600; border-left-color:var(--navy); }
+  nav.toc .toc-title{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-soft); margin-bottom:14px;
+  }
+
+  main{ padding:56px 40px 120px; max-width:var(--maxw); flex:1 1 auto; min-width:0; }
+  section{ margin-bottom:56px; scroll-margin-top:24px; }
+  h1.doc-title{ display:none; }
+  h2{ font-size:1.7rem; font-weight:600; margin:0 0 18px; padding-bottom:10px; border-bottom:2px solid var(--line); }
+  h3{ font-size:1.2rem; font-weight:600; margin:28px 0 10px; color:var(--ink); }
+  p{ margin:0 0 16px; color:var(--ink); }
+  ul,ol{ margin:0 0 18px; padding-left:22px; }
+  li{ margin-bottom:8px; }
+  strong{ color:var(--navy-deep); }
+
+  figure{ margin:28px 0; text-align:center; }
+  figure img{ max-width:100%; border:1px solid var(--line); border-radius:var(--radius); background:#fff; }
+  figcaption{ font-size:13px; color:var(--ink-soft); margin-top:10px; font-style:italic; }
+
+  table{ width:100%; border-collapse:collapse; margin:20px 0 28px; font-size:14.5px; }
+  th,td{ border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+  th{ background:var(--navy); color:#fff; font-weight:600; font-family:'Inter'; font-size:13px; letter-spacing:.02em; }
+  tr:nth-child(even) td{ background:#F5F4F0; }
+
+  .callout{
+    background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--gold);
+    border-radius:var(--radius); padding:18px 20px; margin:20px 0; font-size:14.5px; color:var(--ink-soft);
+  }
+  .callout strong{ color:var(--ink); }
+
+  .badge-row{ display:flex; flex-wrap:wrap; margin:18px 0 28px; }
+  .badge{
+    font-family:'JetBrains Mono',monospace; font-size:12px; padding:5px 12px; border-radius:999px;
+    background:rgba(12,68,124,0.07); color:var(--navy); border:1px solid rgba(12,68,124,0.15);
+    margin:0 8px 8px 0;
+  }
+
+  footer{
+    border-top:1px solid var(--line); padding:40px; text-align:center;
+    font-size:13px; color:var(--ink-soft); font-family:'JetBrains Mono',monospace;
+  }
+
+  @media (max-width:860px){
+    .layout{ flex-direction:column; }
+    nav.toc{ position:relative; height:auto; border-right:none; border-bottom:1px solid var(--line); padding:24px; width:auto; flex:1 1 auto; }
+    main{ padding:40px 22px 80px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="eyebrow">Generative AI Solution Design</span>
+  <h1>Acentra</h1>
+  <p class="sub">AI-powered career enablement platform for early-career professionals</p>
+  <p class="doctype">Solution Design Document · v1.0</p>
+  <div class="meta">
+    <span><strong>Scope</strong> · 0–2 yrs experience, 5 industries</span>
+    <span><strong>Status</strong> · Academic submission</span>
+    <span><strong>Date</strong> · August 2026</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <div class="rail">
+      <div class="rail-fill" id="railFill"></div>
+      <div class="toc-title">Contents</div>
+      <a href="#s1" data-sec>1. Introduction</a>
+      <a href="#s2" data-sec>2. Objectives &amp; scope</a>
+      <a href="#s3" data-sec>3. Target users</a>
+      <a href="#s4" data-sec>4. Solution architecture</a>
+      <a href="#s5" data-sec>5. Data architecture</a>
+      <a href="#s6" data-sec>6. AI orchestration</a>
+      <a href="#s7" data-sec>7. Gap analysis approach</a>
+      <a href="#s8" data-sec>8. Reports &amp; monetisation</a>
+      <a href="#s9" data-sec>9. Web &amp; mobile architecture</a>
+      <a href="#s10" data-sec>10. Technology considerations</a>
+      <a href="#s11" data-sec>11. Security &amp; privacy</a>
+      <a href="#s12" data-sec>12. Non-functional</a>
+      <a href="#s13" data-sec>13. Assumptions</a>
+      <a href="#s14" data-sec>14. Future enhancements</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <section id="s1">
+      <h2>1. Introduction</h2>
+      <h3>1.1 Purpose of this document</h3>
+      <p>This document presents the solution design for Acentra, a generative-AI-based career enablement platform. It describes the problem being addressed, the overall solution architecture, the data design, the artificial-intelligence orchestration approach, and the technology considerations that inform the platform's design.</p>
+      <h3>1.2 Problem statement</h3>
+      <p>Fresh graduates and early-career professionals (0–2 years of experience) frequently lack visibility into how their academic background and personal aptitude map to real industry roles. This is especially true for candidates seeking to move into a different field than the one they studied — for example, a science graduate exploring a career in information technology. Existing career-guidance tools are largely generic and do not combine a candidate's personal assessment data with live, industry-specific market intelligence to produce a personalised, actionable gap analysis.</p>
+      <h3>1.3 Proposed solution</h3>
+      <p>Acentra addresses this gap by combining a structured intake assessment (personal details, education, personality, and psychometric evaluation) with curated industry-market data, and using a generative AI layer to produce a personalised report identifying the candidate's education, skill, experience, and personality gaps against a chosen target role. The platform positions itself as an enablement and coaching tool: it guides and prepares candidates for the job market but does not commit to or guarantee job placement.</p>
+      <h3>1.4 Positioning within a broader career-coaching vision</h3>
+      <p>Acentra, as scoped here, is a focused early-career entry point — addressing candidates with 0–2 years of experience across five target industries. It is positioned as the first stage of a larger, longer-term vision for an AI-powered career and life-coaching platform that would eventually carry a person from early-career self-discovery through professional growth to senior leadership, on one continuous, evidence-based journey (<em>Discover → Grow → Lead</em>). Capabilities associated with that broader vision — scored rehearsal/role-play, exam-preparation content generation, deeper psychometric validation — are noted as future direction in Section 14, but are not part of the current design scope.</p>
+    </section>
+
+    <section id="s2">
+      <h2>2. Objectives and scope</h2>
+      <h3>2.1 Objectives</h3>
+      <ul>
+        <li>Assess a candidate's education, skills, personality, and experience through a structured intake process.</li>
+        <li>Identify and quantify the candidate's gap against a target industry role across four dimensions: education, skills/competency, experience, and personality fit.</li>
+        <li>Provide career pathway guidance, including adjacent or non-obvious pathways such as science-to-IT transitions.</li>
+        <li>Surface market insights — higher-education options, job trends, industry growth, and city-level demand — for the candidate's industry of interest.</li>
+        <li>Support soft-skill development and job-search readiness without guaranteeing placement outcomes.</li>
+        <li>Offer the platform through both a one-time report purchase and a subscription model that allows follow-up queries.</li>
+      </ul>
+      <h3>2.2 In-scope functionality</h3>
+      <ul>
+        <li>Structured intake assessment: personal details, educational qualification, personality assessment, and psychometric assessment via a licensed third-party assessment provider.</li>
+        <li>Optional resume upload for supplementary skill signal.</li>
+        <li>Gap analysis and pathway report generation for five target industries: IT services, e-commerce, manufacturing, semiconductor, and BPO.</li>
+        <li>Market insight reporting, including city/location-level recommendations.</li>
+        <li>Soft-skill development guidance and job-search readiness support.</li>
+        <li>One-time report purchase and subscription-based follow-up querying.</li>
+        <li>A web application for intake, and mobile applications (iOS/Android) for viewing results and conversational follow-up.</li>
+      </ul>
+      <h3>2.3 Out-of-scope functionality</h3>
+      <ul>
+        <li>Job placement guarantees, direct employer matching, or job applications.</li>
+        <li>In-house development of psychometric assessment intellectual property — the platform integrates a licensed third-party assessment engine.</li>
+        <li>A live, human-mentor marketplace (identified as a candidate for a future phase).</li>
+        <li>Industries beyond the five initial target sectors.</li>
+        <li>Payroll, HR-technology, applicant-tracking, or interview-scheduling functionality.</li>
+      </ul>
+    </section>
+
+    <section id="s3">
+      <h2>3. Target user personas</h2>
+      <table>
+        <tr><th>Persona</th><th>Description</th><th>Primary need</th></tr>
+        <tr><td>Fresh graduate</td><td>Recently completed a degree, no work experience, unclear on career direction.</td><td>"What can I do with my degree, and what am I missing?"</td></tr>
+        <tr><td>Career pivoter</td><td>0–2 years of experience, seeking to move into a different industry or function.</td><td>"Can I realistically move into IT or e-commerce, and how?"</td></tr>
+        <tr><td>Science-to-IT explorer</td><td>Non-computing academic background, evaluating the viability of an IT career.</td><td>"What is my gap against an entry-level IT role, and what is the fastest credible path?"</td></tr>
+      </table>
+    </section>
+
+    <section id="s4">
+      <h2>4. Solution architecture</h2>
+      <p>The solution is designed as a set of loosely coupled services organised around three data domains — candidate profile and assessment data, industry market-insight data, and a semantic answer cache — coordinated by a generative AI orchestration layer. A key design principle is that the AI layer never accesses the underlying data stores directly; it interacts with a governed tool-access layer that mediates every data request the model makes.</p>
+      <figure>
+        <img src="assets/architecture.png" alt="Acentra high-level architecture diagram">
+        <figcaption>Figure 1 — High-level solution architecture</figcaption>
+      </figure>
+      <h3>4.1 Component overview</h3>
+      <table>
+        <tr><th>Component</th><th>Responsibility</th></tr>
+        <tr><td>Web application</td><td>Collects the intake form (personal details, education, resume upload) and hands off to the third-party assessment provider. Report viewing is not part of the web experience.</td></tr>
+        <tr><td>Mobile application</td><td>Displays generated reports and hosts the conversational follow-up experience for subscribers.</td></tr>
+        <tr><td>API Gateway / Authentication / Billing</td><td>Handles authentication, request routing, rate limiting, and subscription/entitlement checks.</td></tr>
+        <tr><td>Ingestion Service</td><td>Receives assessment results from the third-party vendor and normalises vendor-specific formats into the platform's internal profile structure.</td></tr>
+        <tr><td>AI Orchestrator</td><td>Coordinates each AI-generated response: checks the semantic cache, retrieves grounding data through the tool-access layer, and invokes the language model.</td></tr>
+        <tr><td>Gap Scoring Engine</td><td>Performs the structured, rules- and embedding-based comparison between a candidate profile and a target role, producing quantified gap scores before any narrative is generated.</td></tr>
+        <tr><td>Report Generator</td><td>Converts the structured gap output and retrieved market context into the final narrative report.</td></tr>
+        <tr><td>Tool-access layer (MCP)</td><td>The sole interface through which the AI model reaches application data — a curated set of read-only functions rather than direct database access.</td></tr>
+        <tr><td>Data pipeline</td><td>Scheduled jobs that refresh the industry insight data store from external sources on a defined cadence.</td></tr>
+      </table>
+    </section>
+
+    <section id="s5">
+      <h2>5. Data architecture</h2>
+      <p>The solution follows a polyglot-persistence approach: different categories of data are held in the data store best suited to their structure and access pattern, rather than in a single database technology.</p>
+
+      <h3>5.1 Candidate profile and assessment data</h3>
+      <p><strong>Nature of the data:</strong> Semi-structured and provider-dependent, since assessment output formats vary by vendor. Personality and psychometric results are treated as sensitive personal data.</p>
+      <p><strong>Design choice:</strong> A NoSQL document-oriented database (e.g. MongoDB, Amazon DynamoDB, or Azure Cosmos DB) for the assessment payload, since the document model tolerates schema variation across vendors and versions without migrations.</p>
+      <p><strong>Companion store:</strong> A relational database for entities requiring strong consistency: user accounts, consent records, subscriptions, billing, and report metadata.</p>
+      <p><strong>Treatment of the assessment vendor:</strong> The vendor is treated as a data source, not a system of record. Results are ingested into Acentra's own store as soon as generated, so the platform retains data for regeneration, follow-ups, and audit independent of vendor retention policy.</p>
+
+      <h3>5.2 Industry insight data</h3>
+      <p>Industry data — salary bands, city-level demand, skill taxonomies, growth trends for the five target sectors — is structurally distinct from candidate data and held separately:</p>
+      <ul>
+        <li><strong>Structured layer:</strong> a relational database (or analytical warehouse as volume grows) for tabular, numeric data supporting aggregate queries.</li>
+        <li><strong>Unstructured layer:</strong> a vector store holding embeddings of industry reports and job descriptions, enabling retrieval-augmented generation.</li>
+        <li><strong>Refresh cadence:</strong> a scheduled pipeline, since labour-market data becomes outdated within months.</li>
+        <li><strong>Sources:</strong> government labour statistics, job-board aggregators, and industry-association reports (IT services, e-commerce, manufacturing, semiconductor, BPO), each confirmed against source licensing terms.</li>
+      </ul>
+
+      <h3>5.3 Semantic cache for repeated queries</h3>
+      <p>A meaningful proportion of candidates share similar profiles and target-industry combinations. To avoid re-invoking the language model for substantially similar questions, a semantic cache sits as a distinct layer from the industry knowledge base:</p>
+      <ul>
+        <li>The <strong>semantic cache</strong> stores embeddings of prior (profile summary + target industry + question) combinations mapped to previously generated answers.</li>
+        <li>The <strong>industry knowledge base</strong> stores embeddings of the market-data corpus used to ground new generations.</li>
+      </ul>
+      <div class="callout"><strong>Cache invalidation:</strong> entries carry a time-to-live aligned with the industry-data refresh cadence, so a cached answer cannot outlive the market data it was generated from.</div>
+      <figure>
+        <img src="assets/flow.png" alt="Query flow with semantic cache diagram">
+        <figcaption>Figure 2 — Query flow with semantic cache</figcaption>
+      </figure>
+
+      <h3>5.4 Data store summary</h3>
+      <table>
+        <tr><th>Data domain</th><th>Store type</th><th>Rationale</th></tr>
+        <tr><td>Candidate profile &amp; assessment results</td><td>NoSQL document store</td><td>Vendor formats vary and evolve; avoids migrations.</td></tr>
+        <tr><td>Accounts, billing, subscriptions, consent</td><td>Relational database</td><td>Requires strong consistency and transactional integrity.</td></tr>
+        <tr><td>Industry benchmarks (salary, demand, trends)</td><td>Relational database / warehouse</td><td>Tabular, aggregate, analytical access pattern.</td></tr>
+        <tr><td>Industry reports and articles (unstructured)</td><td>Vector store</td><td>Semantic retrieval to ground AI-generated narrative.</td></tr>
+        <tr><td>Cached responses to similar queries</td><td>Vector store (separate index, time-bound)</td><td>Fast, low-cost semantic lookup before invoking the model.</td></tr>
+      </table>
+    </section>
+
+    <section id="s6">
+      <h2>6. Generative AI orchestration design</h2>
+      <p>The design separates data retrieval, structured analysis, and narrative generation into distinct stages, rather than asking the language model to perform all three at once — improving consistency, auditability, and cost-efficiency.</p>
+      <h3>6.1 Governed tool access</h3>
+      <p>The language model does not receive direct database credentials or unrestricted query capability. A governed tool-access layer exposes a small, curated set of read-only functions through which the model requests exactly the data it needs — a candidate's profile summary, industry benchmark figures for a city, or the canonical skill list for a role. This pattern, commonly implemented using the <strong>Model Context Protocol (MCP)</strong>, provides an auditable record of what data informed any given AI output.</p>
+      <h3>6.2 Retrieval-augmented generation</h3>
+      <p>Narrative generation is grounded using retrieval-augmented generation: relevant passages from the industry knowledge base are retrieved based on the candidate's target role and included as context, so market-related claims in the report are traceable to source data.</p>
+      <h3>6.3 Processing flow</h3>
+      <p>For every candidate query, the system first checks the semantic cache; on a miss, it retrieves the candidate profile and relevant industry data through the tool-access layer, computes structured gap scores, and only then invokes the language model — writing the result back to the cache for future reuse.</p>
+    </section>
+
+    <section id="s7">
+      <h2>7. Gap analysis approach</h2>
+      <p>Gap analysis is designed as a two-stage process, separating deterministic computation from narrative generation.</p>
+      <h3>7.1 Structured comparison stage</h3>
+      <ul>
+        <li><strong>Education gap:</strong> comparison of the candidate's qualification against the target role's typical/required qualification.</li>
+        <li><strong>Skill and competency gap:</strong> comparison of stated and resume-derived skills against a canonical skill taxonomy for the target role.</li>
+        <li><strong>Experience gap:</strong> comparison of years/type of experience against the typical experience band for the role level.</li>
+        <li><strong>Personality and soft-skill fit:</strong> comparison of psychometric output against a role-fit profile.</li>
+      </ul>
+      <p>This stage produces a structured, quantified gap summary with supporting evidence, ensuring consistency across candidates with similar profiles.</p>
+      <h3>7.2 Narrative generation stage</h3>
+      <p>The language model receives the structured gap summary and retrieved industry context, producing the reader-facing report: gap explanation, recommended pathway, soft-skill suggestions, and city-level recommendations — grounded in already-verified data.</p>
+    </section>
+
+    <section id="s8">
+      <h2>8. Report generation and monetisation model</h2>
+      <h3>8.1 Report contents</h3>
+      <ul>
+        <li>Education, skill, experience, and personality-fit gap summary for the requested target role.</li>
+        <li>Recommended career pathway(s), including adjacent roles.</li>
+        <li>Soft-skill development recommendations.</li>
+        <li>Market insight: higher-education options, job-trend direction, industry growth outlook.</li>
+        <li>City-level insight: recommended locations for the target role.</li>
+      </ul>
+      <h3>8.2 Monetisation approach</h3>
+      <table>
+        <tr><th>Model</th><th>Description</th><th>Design implication</th></tr>
+        <tr><td>One-time report</td><td>Single report for one target industry/role.</td><td>Retained and re-viewable; a new target industry requires a new purchase or active subscription.</td></tr>
+        <tr><td>Subscription</td><td>Follow-up questions and additional reports for the subscription duration.</td><td>Usage metering and rate limiting; every follow-up routed through the semantic cache first.</td></tr>
+      </table>
+    </section>
+
+    <section id="s9">
+      <h2>9. Application architecture: web and mobile</h2>
+      <table>
+        <tr><th>Surface</th><th>Role in the solution</th><th>Design note</th></tr>
+        <tr><td>Web application</td><td>Intake only: personal details, education, resume upload, hand-off to assessment.</td><td>Limited to the intake funnel; does not display generated reports.</td></tr>
+        <tr><td>Mobile application (iOS/Android)</td><td>Report viewing and subscription follow-up chat.</td><td>Routed through the same AI orchestration layer as report generation.</td></tr>
+        <tr><td>Shared backend</td><td>A single API layer serves both web and mobile.</td><td>No duplicated business logic between clients.</td></tr>
+      </table>
+    </section>
+
+    <section id="s10">
+      <h2>10. Technology considerations</h2>
+      <p>The final selection would typically depend on team expertise, cloud commitments, budget, and expected scale; the options below illustrate the range of suitable choices rather than mandating a specific vendor.</p>
+      <div class="badge-row">
+        <span class="badge">AWS / Azure / GCP</span>
+        <span class="badge">MongoDB / DynamoDB / Cosmos DB</span>
+        <span class="badge">PostgreSQL</span>
+        <span class="badge">Pinecone / Weaviate / Milvus</span>
+        <span class="badge">Anthropic Claude</span>
+        <span class="badge">MCP</span>
+        <span class="badge">Apache Airflow</span>
+        <span class="badge">React / React Native</span>
+        <span class="badge">Stripe / Razorpay</span>
+      </div>
+      <table>
+        <tr><th>Layer</th><th>Representative options</th></tr>
+        <tr><td>Cloud platform</td><td>Amazon Web Services, Microsoft Azure, or Google Cloud Platform</td></tr>
+        <tr><td>Candidate profile / assessment store</td><td>MongoDB, Amazon DynamoDB, or Azure Cosmos DB (NoSQL document store)</td></tr>
+        <tr><td>Transactional store</td><td>PostgreSQL or a comparable managed relational database service</td></tr>
+        <tr><td>Industry insights store</td><td>PostgreSQL initially, migrating to a warehouse (BigQuery/Snowflake) if volume grows</td></tr>
+        <tr><td>Vector store (RAG &amp; semantic cache)</td><td>Pinecone, Weaviate, Milvus, or a vector extension on the relational database</td></tr>
+        <tr><td>Generative AI model</td><td>A large language model API (e.g. Anthropic Claude), selected per task</td></tr>
+        <tr><td>Tool-access / orchestration layer</td><td>An MCP-based tool server or equivalent internal orchestration service</td></tr>
+        <tr><td>Data pipeline / ETL</td><td>Apache Airflow or a managed equivalent</td></tr>
+        <tr><td>Mobile application</td><td>React Native, or native iOS/Android development</td></tr>
+        <tr><td>Web application</td><td>A modern web framework such as React or Next.js</td></tr>
+        <tr><td>Authentication</td><td>A managed identity provider (AWS Cognito, Auth0, Azure AD B2C)</td></tr>
+        <tr><td>Payments and subscriptions</td><td>A payment gateway such as Stripe or Razorpay</td></tr>
+      </table>
+    </section>
+
+    <section id="s11">
+      <h2>11. Security and privacy considerations</h2>
+      <ul>
+        <li>Psychometric and personality data is classified as sensitive personal data and encrypted at rest and in transit.</li>
+        <li>Explicit, granular consent captured at intake for data collection, vendor sharing, and AI-generated report creation.</li>
+        <li>Applicable data-protection regime(s) — e.g. India's DPDP Act and/or GDPR — identified based on target markets, informing consent design and data-residency choices.</li>
+        <li>Since assessment data is retained beyond the vendor's systems, the platform provides its own data-subject access/deletion mechanism.</li>
+        <li>The tool-access layer returns only the fields required for a given task, limiting the model's exposure to sensitive information.</li>
+        <li>Every request through the tool-access layer is logged, supporting audit and compliance review.</li>
+      </ul>
+    </section>
+
+    <section id="s12">
+      <h2>12. Non-functional considerations</h2>
+      <table>
+        <tr><th>Concern</th><th>Design approach</th></tr>
+        <tr><td>Cost management</td><td>Semantic caching ahead of LLM calls; deterministic gap scoring ahead of narrative generation; subscription usage metering.</td></tr>
+        <tr><td>Responsiveness</td><td>Async report generation with completion notification; follow-up queries target near-real-time response, favouring cache hits.</td></tr>
+        <tr><td>Data freshness</td><td>Refresh cadence and cache expiry kept in alignment.</td></tr>
+        <tr><td>Scalability</td><td>Stateless application services and horizontally scalable data stores.</td></tr>
+        <tr><td>Auditability</td><td>Every report traceable to its structured gap summary and the data-access calls that produced it.</td></tr>
+      </table>
+    </section>
+
+    <section id="s13">
+      <h2>13. Assumptions</h2>
+      <ol>
+        <li>A specific cloud provider has not been mandated; the design is intentionally portable across major providers.</li>
+        <li>A third-party assessment vendor will be integrated via API/webhook, treated as a data source rather than the platform's system of record.</li>
+        <li>The initial target market is assumed to be India, informing future data-residency decisions.</li>
+        <li>Mentorship in the initial release is limited to structured content and coaching recommendations, not a live mentor marketplace.</li>
+        <li>Industry data sourcing assumes licensed or API-based access rather than unauthorised collection.</li>
+      </ol>
+    </section>
+
+    <section id="s14">
+      <h2>14. Future enhancements</h2>
+      <p>Beyond the near-term items below, Acentra could evolve toward the longer-term <em>Discover → Grow → Lead</em> vision of a continuous career and life-coaching platform spanning a person's full career.</p>
+      <ol>
+        <li>A live, one-to-one mentorship marketplace with candidate-mentor matching.</li>
+        <li>Expansion of the platform beyond the five initial target industries.</li>
+        <li>Web-based report viewing, once the mobile-first engagement model has been validated.</li>
+        <li>Role-specific embedding refinement to improve skill-gap scoring precision.</li>
+        <li>Multi-region deployment to support markets beyond the initial launch geography.</li>
+        <li>Extension to mid-career and senior-leadership audiences, beyond the initial 0–2 year focus.</li>
+        <li>Scored rehearsal and role-play simulation for interviews, performance reviews, and pitches — addressing the "rehearsal gap" in existing career-guidance tools.</li>
+        <li>Exam-preparation content generation, favouring fresh, syllabus-aligned material over recycled question banks.</li>
+        <li>A dedicated psychometric validation layer, developed with domain experts, strengthening the scientific grounding of AI-assisted insights.</li>
+        <li>A more advanced privacy architecture for sensitive personal data, treated as a long-term trust differentiator.</li>
+      </ol>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  Acentra — Generative AI Solution Design Document · v1.0 · August 2026
+</footer>
+
+<script>
+  const links = document.querySelectorAll('nav.toc a[data-sec]');
+  const sections = Array.from(links).map(l => document.querySelector(l.getAttribute('href')));
+  const railFill = document.getElementById('railFill');
+
+  function onScroll(){
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = Math.min(100, Math.max(0, (scrollTop / docHeight) * 100));
+    railFill.style.height = pct + '%';
+
+    let activeIdx = 0;
+    sections.forEach((sec, i) => {
+      if (sec && sec.getBoundingClientRect().top < 140) activeIdx = i;
+    });
+    links.forEach((l, i) => l.classList.toggle('active', i === activeIdx));
+  }
+  document.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+</script>
+
+</body>
+</html>
